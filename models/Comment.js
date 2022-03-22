@@ -8,23 +8,28 @@ Comment.init(
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            primaryKey: true,
-            allowNull: false
+            autoIncrement: true,
+            primaryKey: true
         },
         comment_text: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                len: [1]
+            }
         },
         user_id: {
             type: DataTypes.INTEGER,
             references: {
-                model: "user"
+                model: "user",
+                key: "id"
             }
         },
         post_id: {
             type: DataTypes.INTEGER,
             references: {
-                model: "post"
+                model: "post",
+                key: "id"
             }
         }
     },
