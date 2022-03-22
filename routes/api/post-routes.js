@@ -1,12 +1,13 @@
 const router = require("express").Router();
-const {Post, User} = require("../../models");
+const sequelize = require("../../config/connection");
+const {Post, User, Vote} = require("../../models");
 
-// get all users
+// get all posts
 router.get("/", (req, res) => {
     console.log("====================");
     Post.findAll({
         attributes: ["id", "post_url", "title", "created_at"],
-        order: ["created_at", "DESC"],
+        order: ["created_at"],
         include: [
             {
                 model: User,
@@ -62,6 +63,39 @@ router.post("/", (req, res) => {
     })
 });
 
+
+// Update a post's votes
+router.put("/upvote", (req, res) => {
+    Vote.create({
+        user_id: req.body.user_id,
+        post_id: req.body.post_id
+    })
+    .then(() => {
+        // Find the post the user voted on
+        return Post.findOne({
+            where: {
+                id: req.body.post_id
+            },
+            attributes: [
+                "id",
+                "post_url",
+                "title",
+                "created_at",
+                // Use a raw SQL query to return the count of the post's votes as vote_count
+                [
+                sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'),
+                'vote_count'
+                ]
+            ]
+        });
+    })
+    .then(dbPostData => res.json(dbPostData))
+    .catch(err =>{
+        console.log(err);
+        res.status(400).json(err)
+    });
+});
+
 // Update a post's title
 router.put("/:id", (req, res) => {
     Post.update(
@@ -86,6 +120,7 @@ router.put("/:id", (req, res) => {
         res.status(500).json(err);
     });
 });
+
 
 
 // Delete a post
