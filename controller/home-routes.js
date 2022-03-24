@@ -37,4 +37,9 @@ router.get('/', (req, res) => {
       });
   });
 
+// Route to go to signup page
+router.get("/login", (req, res) => {
+    res.render("login");
+});
+
 module.exports = router;
