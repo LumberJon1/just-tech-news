@@ -30,7 +30,10 @@ router.get('/', (req, res) => {
       .then(dbPostData => {
         // Get the array of posts and map it so that the template returns a serialized version
         const posts = dbPostData.map(post => post.get({plain: true}));
-        res.render("homepage", {posts});
+        res.render("homepage", {
+          posts,
+          loggedIn: req.session.loggedIn
+        });
     })
       .catch(err => {
         console.log(err);
