@@ -75,7 +75,10 @@ router.get("/post/:id", (req, res) => {
         // Don't forget to serialize post data so Handlebars can read it
         const post = dbPostData.get({plain: true});
 
-        res.render("single-post", {post});
+        res.render("single-post", {
+          post,
+        loggedIn: req.session.loggedIn
+      });
     })
     .catch(err => {
         console.log(err);
